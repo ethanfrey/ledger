@@ -1,0 +1,9 @@
+package: github.com/ethanfrey/goc
+import:
+- package: github.com/flynn/hid
+testImport:
+- package: github.com/stretchr/testify
+  subpackages:
+  - assert
+  - require
+
