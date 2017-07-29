@@ -1,5 +1,5 @@
-hash: c59f110e34c4fddce4e70f0d18abe6ec5a6dd9dacadf534cdeb8fa5c2f668049
-updated: 2017-07-28T17:32:10.888124442-04:00
+hash: afb2c0aa5adf62a731dce89daa34c1274fe46993414698172decfd6cb23a56d5
+updated: 2017-07-28T22:48:53.707986385-04:00
 imports:
 - name: github.com/flynn/hid
   version: ed06a31c6245d4552e8dbba7e32e5b010b875d65

@@ -1,4 +1,4 @@
-package: github.com/ethanfrey/goc
+package: github.com/ethanfrey/ledger
 import:
 - package: github.com/flynn/hid
 testImport:

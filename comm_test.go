@@ -1,7 +1,6 @@
 package ledger
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -25,10 +24,17 @@ func TestExchange(t *testing.T) {
 	}
 
 	for i, tc := range cases {
-		echo := NewLedger(NewEcho(64))
-		fmt.Println("trying", tc.input)
 		data := []byte(tc.input)
+
+		// no 0x9000 trailer...
+		echo := NewLedger(NewEcho(64))
 		resp, err := echo.Exchange(data, 100)
+		require.NotNil(err)
+
+		// note: we need to append 9000 for success
+		echo = NewLedger(NewEcho(64))
+		send := append(data, 0x90, 0x0)
+		resp, err = echo.Exchange(send, 100)
 		require.Nil(err, "%d: %+v", i, err)
 		assert.Equal(data, resp, "%d", i)
 	}

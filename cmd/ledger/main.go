@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/ethanfrey/goc/ledger"
+	"github.com/ethanfrey/ledger"
 )
 
 func main() {
