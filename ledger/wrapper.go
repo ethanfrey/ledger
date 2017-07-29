@@ -81,17 +81,19 @@ func validatePrefix(buf []byte, channel, sequenceIdx uint16, ble bool) ([]byte, 
 }
 
 // UnwrapResponseAPDU parses a response of 64 byte packets into the real data
-func UnwrapResponseAPDU(channel uint16, data []byte, packetSize int, ble bool) ([]byte, error) {
+func UnwrapResponseAPDU(channel uint16, dev <-chan []byte, packetSize int, ble bool) ([]byte, error) {
+	var err error
 	var sequenceIdx uint16
 	var extraHeaderSize int
 	if !ble {
 		extraHeaderSize = 2
 	}
-	if len(data) < 5+extraHeaderSize+5 {
+	buf := <-dev
+	if len(buf) < 5+extraHeaderSize+5 {
 		return nil, errTooShort
 	}
 
-	buf, err := validatePrefix(data, channel, sequenceIdx, ble)
+	buf, err = validatePrefix(buf, channel, sequenceIdx, ble)
 	if err != nil {
 		return nil, err
 	}
@@ -101,19 +103,17 @@ func UnwrapResponseAPDU(channel uint16, data []byte, packetSize int, ble bool) (
 	result := make([]byte, responseLength)
 	out := result
 
-	if len(data) < 5+extraHeaderSize+responseLength {
-		return nil, errTooShort
-	}
-
 	blockSize := packetSize - 5 - extraHeaderSize
 	if blockSize > len(buf) {
 		blockSize = len(buf)
 	}
 	copy(out, buf[:blockSize])
 
-	for len(buf) > blockSize {
+	// if there is anything left to read...
+	for len(out) > blockSize {
 		out = out[blockSize:]
-		buf = buf[blockSize:]
+		buf = <-dev
+
 		sequenceIdx++
 		buf, err = validatePrefix(buf, channel, sequenceIdx, ble)
 		if err != nil {

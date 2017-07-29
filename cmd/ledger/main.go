@@ -1,9 +1,9 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/ethanfrey/goc/ledger"
 )
@@ -15,11 +15,14 @@ func main() {
 		return
 	}
 
-	data := strings.Join(os.Args[1:], " ")
-	fmt.Println("Sending", data)
-	fmt.Println("")
+	data, err := hex.DecodeString(os.Args[1])
+	if err != nil {
+		fmt.Printf("Error: %+v\n", err)
+		return
+	}
+	fmt.Printf("Sending %X\n\n", data)
 
-	resp, err := ledger.Exchange([]byte(data), 100)
+	resp, err := ledger.Exchange(data, 100)
 	if err != nil {
 		fmt.Printf("Error: %+v\n", err)
 		return
