@@ -2,6 +2,7 @@ package ledger
 
 import (
 	"encoding/binary"
+	"errors"
 )
 
 var codec = binary.BigEndian
@@ -53,4 +54,77 @@ func WrapCommandAPDU(channel uint16, command []byte, packetSize int, ble bool) [
 	}
 
 	return result
+}
+
+var (
+	errTooShort        = errors.New("too short")
+	errInvalidChannel  = errors.New("invalid channel")
+	errInvalidSequence = errors.New("invalid sequence")
+	errInvalidTag      = errors.New("invalid tag")
+)
+
+func validatePrefix(buf []byte, channel, sequenceIdx uint16, ble bool) ([]byte, error) {
+	if !ble {
+		if codec.Uint16(buf) != channel {
+			return nil, errInvalidChannel
+		}
+		buf = buf[2:]
+	}
+
+	if buf[0] != 0x05 {
+		return nil, errInvalidTag
+	}
+	if codec.Uint16(buf[1:]) != sequenceIdx {
+		return nil, errInvalidSequence
+	}
+	return buf[3:], nil
+}
+
+// UnwrapResponseAPDU parses a response of 64 byte packets into the real data
+func UnwrapResponseAPDU(channel uint16, data []byte, packetSize int, ble bool) ([]byte, error) {
+	var sequenceIdx uint16
+	var extraHeaderSize int
+	if !ble {
+		extraHeaderSize = 2
+	}
+	if len(data) < 5+extraHeaderSize+5 {
+		return nil, errTooShort
+	}
+
+	buf, err := validatePrefix(data, channel, sequenceIdx, ble)
+	if err != nil {
+		return nil, err
+	}
+
+	responseLength := int(codec.Uint16(buf))
+	buf = buf[2:]
+	result := make([]byte, responseLength)
+	out := result
+
+	if len(data) < 5+extraHeaderSize+responseLength {
+		return nil, errTooShort
+	}
+
+	blockSize := packetSize - 5 - extraHeaderSize
+	if blockSize > len(buf) {
+		blockSize = len(buf)
+	}
+	copy(out, buf[:blockSize])
+
+	for len(buf) > blockSize {
+		out = out[blockSize:]
+		buf = buf[blockSize:]
+		sequenceIdx++
+		buf, err = validatePrefix(buf, channel, sequenceIdx, ble)
+		if err != nil {
+			return nil, err
+		}
+
+		blockSize = packetSize - 3 - extraHeaderSize
+		if blockSize > len(buf) {
+			blockSize = len(buf)
+		}
+		copy(out, buf[:blockSize])
+	}
+	return result, nil
 }

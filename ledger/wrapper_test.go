@@ -34,7 +34,11 @@ func TestWrapCommand(t *testing.T) {
 		hexOut, err := hex.DecodeString(tc.output)
 		require.Nil(err, "%d: %+v", i, err)
 
-		res := WrapCommandAPDU(channel, hexIn, size, false)
-		assert.Equal(hexOut, res, "%d", i)
+		msg := WrapCommandAPDU(channel, hexIn, size, false)
+		assert.Equal(hexOut, msg, "%d", i)
+
+		resp, err := UnwrapResponseAPDU(channel, msg, size, false)
+		assert.Nil(err, "%d: %+v", i, err)
+		assert.Equal(hexIn, resp, "%d", i)
 	}
 }
