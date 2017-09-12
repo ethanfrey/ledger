@@ -5,12 +5,12 @@ This wraps the USB HID layer and handles the ledger specific communication.
 
 ## CLI Usage
 
-Send bytes to ledger (app 0x80, op 0x01, payload 0xf00d)
+Send bytes to ledger (app 0x80, op 0x02, payload 0xf00d)
 
 ```
 make vendor
 make install
-ledger 0801F00D
+ledger 8002F00D
 ```
 
 
