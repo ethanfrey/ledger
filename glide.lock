@@ -1,8 +1,8 @@
-hash: afb2c0aa5adf62a731dce89daa34c1274fe46993414698172decfd6cb23a56d5
-updated: 2017-07-28T22:48:53.707986385-04:00
+hash: 91421d509e2fccc2fe33b0ecc56d01badc182070b2eddd4ddf152be51c53c2f2
+updated: 2017-10-26T11:53:45.412418524+02:00
 imports:
-- name: github.com/flynn/hid
-  version: ed06a31c6245d4552e8dbba7e32e5b010b875d65
+- name: github.com/ethanfrey/hid
+  version: f379bda1dbc8e79333b04563f71a12e86206efe5
 testImports:
 - name: github.com/davecgh/go-spew
   version: 6d212800a42e8ab5c146b8ace3490ee17e5225f9
