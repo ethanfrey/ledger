@@ -1,6 +1,6 @@
 package: github.com/ethanfrey/ledger
 import:
-- package: github.com/ethanfrey/hid
+- package: github.com/flynn/hid
 testImport:
 - package: github.com/stretchr/testify
   subpackages:

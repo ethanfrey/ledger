@@ -3,7 +3,7 @@ package ledger
 import (
 	"errors"
 
-	"github.com/ethanfrey/hid"
+	"github.com/flynn/hid"
 )
 
 const (
